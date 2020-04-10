@@ -7,6 +7,7 @@ allprojects {
 
     //统一引入java插件，子项目可以不用重复配置
     apply plugin: "java"
+    apply plugin: "maven-publish"
     sourceCompatibility = 1.8
 
     group 'org.example'
@@ -51,6 +52,29 @@ allprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
+    }
+
+
+    publishing{
+        publications{
+            //publishProject为自定义名称，可写多个发布任务
+            publishProject(MavenPublication){
+                //发布jar包
+                from components.java
+            }
+        }
+
+        //配置私服地址
+        repositories {
+            maven{
+                //指定私服地址
+                url = ""
+                credentials{
+                    username 'admin'
+                    password '123'
+                }
+            }
+        }
     }
 }
 
