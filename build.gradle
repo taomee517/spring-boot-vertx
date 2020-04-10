@@ -1,43 +1,56 @@
-plugins {
-    id 'java'
-}
-
-apply from: "config.gradle"
-group 'org.example'
-version '1.0.0'
-
-sourceCompatibility = 1.8
-
-
-
-
-
-// 冲突报错 + 以下任务 + 命令行搜索
-// gradlew allDepInsight  --configuration compile --dependency ${keyword}
-//可以搜索出某个jar包被哪些依赖引用，然后用于解决依赖冲突
-subprojects {
-    task allDepInsight(type: DependencyInsightReportTask){
-        doFirst {}
-    }
-}
-
 allprojects {
+    ext {
+        ver = [
+                "springbootVersion": "2.2.4.RELEASE"
+        ]
+    }
+
+    //统一引入java插件，子项目可以不用重复配置
+    apply plugin: "java"
+    sourceCompatibility = 1.8
+
+    group 'org.example'
+    version '1.0.0'
 
     configurations.all{
         resolutionStrategy(){
             //将冲突解决策略改为发生冲突时报错
             failOnVersionConflict()
+            force "org.slf4j:slf4j-api:1.7.30"
         }
+    }
+
+    // 冲突报错 + 以下任务 + 命令行搜索
+    // gradlew allDepInsight  --configuration compile --dependency ${keyword}
+    //可以搜索出某个jar包被哪些依赖引用，然后用于解决依赖冲突
+    //subprojects和allprojects的效果一样
+    task allDepInsight(type: DependencyInsightReportTask){
+        doFirst {}
     }
 
     repositories {
         /**先从本地仓库查找jar包*/
         mavenLocal()
-
         /**再从aliyun镜像下载依赖jar包*/
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-
         /**再从maven中央仓库下载依赖jar包*/
         mavenCentral()
     }
+
+    dependencies {
+//        compile('org.springframework.boot:spring-boot-starter-web:${ver.springbootVersion}'){
+        compile('org.springframework.boot:spring-boot-starter-web:2.2.4.RELEASE'){
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        }
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: '2.2.4.RELEASE'
+        // lombok
+        compile group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+        annotationProcessor 'org.projectlombok:lombok:1.18.10'
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
 }
+

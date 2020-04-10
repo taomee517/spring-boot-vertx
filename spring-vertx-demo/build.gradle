@@ -1,20 +1,9 @@
-plugins {
-    id 'java'
-}
-
-group 'org.example'
-version '1.0.0'
-
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
     //hibernate-core
-    compile (group: 'org.hibernate', name: 'hibernate-core', version: '3.6.3.Final'){
-        exclude group: 'org.slf4j', module: 'slf4j-api'
-    }
+//    compile (group: 'org.hibernate', name: 'hibernate-core', version: '3.6.3.Final'){
+//        exclude group: 'org.slf4j', module: 'slf4j-api'
+//    }
+
+    //引入项目内的其它模块
+    compile project(":spring-vertx-api")
 }
