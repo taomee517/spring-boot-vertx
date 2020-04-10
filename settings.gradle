@@ -1,0 +1,3 @@
+rootProject.name = 'spring-boot-vertx'
+include 'spring-vertx-demo'
+

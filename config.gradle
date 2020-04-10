@@ -1,0 +1,13 @@
+ext{
+
+    version = [
+            springbootVersion: "2.2.4.RELEASE",
+            junitVersion: "4.12"
+    ]
+
+    dependencies = [
+        "spring-boot-starter-web": 'org.springframework.boot:spring-boot-starter-web:${version["springbootVersion"]}',
+        "spring-boot-starter": 'org.springframework.boot:spring-boot-starter:${version["springbootVersion"]}',
+        "junit": 'junit:junit:${version["junitVersion"]}'
+    ]
+}
