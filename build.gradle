@@ -3,6 +3,7 @@ allprojects {
         springbootVersion = '2.2.4.RELEASE'
         lombokVersion = '1.18.10'
         junitVersion = '4.12'
+        vertxVersion = '3.9.0'
     }
 
     //统一引入java插件，子项目可以不用重复配置
@@ -40,7 +41,7 @@ allprojects {
     }
 
     dependencies {
-        compile("org.springframework.boot:spring-boot-starter-web:${springbootVersion}"){
+        compile("org.springframework.boot:spring-boot-starter:${springbootVersion}"){
             exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
         }
         compile group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: "${springbootVersion}"

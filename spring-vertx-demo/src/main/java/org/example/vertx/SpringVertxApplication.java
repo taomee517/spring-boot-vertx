@@ -1,8 +1,13 @@
 package org.example.vertx;
 
+import io.vertx.core.Vertx;
 import lombok.extern.slf4j.Slf4j;
+import org.example.vertx.verticle.IndexServer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import javax.annotation.PostConstruct;
 
 /**
  * SpringVertxApplication
@@ -14,8 +19,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 @SpringBootApplication
 public class SpringVertxApplication {
+    @Autowired
+    IndexServer indexServer;
+
     public static void main(String[] args) {
         SpringApplication.run(SpringVertxApplication.class);
         log.info("spring-vertx 项目启动！");
+    }
+
+    @PostConstruct
+    public void loadVerticle(){
+        Vertx.vertx().deployVerticle(indexServer);
     }
 }

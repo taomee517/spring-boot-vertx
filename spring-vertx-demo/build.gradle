@@ -6,4 +6,11 @@ dependencies {
 
     //引入项目内的其它模块
     compile project(":spring-vertx-api")
+
+    // vertx-core
+    compile group: 'io.vertx', name: 'vertx-core', version: "${vertxVersion}"
+    // vertx-web
+    compile group: 'io.vertx', name: 'vertx-web', version: "${vertxVersion}"
+
+
 }
