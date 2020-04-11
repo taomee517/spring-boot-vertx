@@ -24,7 +24,7 @@ public class SpringVertxApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SpringVertxApplication.class);
-        log.info("spring-vertx 项目启动！");
+        log.info("恭喜！启动成功！");
     }
 
     @PostConstruct
