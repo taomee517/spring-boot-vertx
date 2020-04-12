@@ -8,9 +8,59 @@ dependencies {
     compile project(":spring-vertx-api")
 
     // vertx-core
-    compile group: 'io.vertx', name: 'vertx-core', version: "${vertxVersion}"
+    implementation "io.vertx:vertx-core:${vertxVersion}"
     // vertx-web
-    compile group: 'io.vertx', name: 'vertx-web', version: "${vertxVersion}"
+    implementation group: 'io.vertx', name: 'vertx-web', version: "${vertxVersion}"
+    //vertx-service-proxy
+    implementation "io.vertx:vertx-service-proxy:${vertxVersion}"
+    annotationProcessor "io.vertx:vertx-service-proxy:${vertxVersion}"
+    //vertx-codegen-processor
+    compileOnly  "io.vertx:vertx-codegen:${vertxVersion}"
+    annotationProcessor "io.vertx:vertx-codegen:${vertxVersion}"
 
 
+
+    //spring-boot-starter-data-jpa
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${springbootVersion}"){
+//        exclude(group:"org.apache.logging.log4j", module:"log4j-to-slf4j")
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+
+    /**mysql*/
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.48'
+    /**druid*/
+    compile group: 'com.alibaba', name: 'druid-spring-boot-starter', version: '1.1.21'
+    /**mybatis*/
+    compile ('org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.2'){
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
 }
+
+// codegen
+task annotationProcessing(type: JavaCompile, group: 'build') {
+    description 'Generates the stubs'
+    options.incremental = false
+    source = sourceSets.main.java
+    classpath = configurations.compileClasspath
+    destinationDir = project.file('src/main/java')
+    options.annotationProcessorPath = configurations.annotationProcessor
+    options.debugOptions.debugLevel = "source,lines,vars"
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor", "io.vertx.codegen.CodeGenProcessor",
+            "-Acodegen.output=${project.projectDir}/src/main"
+    ]
+}
+
+compileJava {
+    dependsOn (annotationProcessing)
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += 'src/main/java'
+        }
+    }
+}
+
