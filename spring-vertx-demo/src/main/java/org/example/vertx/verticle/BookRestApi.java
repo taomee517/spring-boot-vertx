@@ -25,6 +25,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.serviceproxy.ServiceProxyBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.example.vertx.config.AppConfig;
 import org.example.vertx.dao.Book;
 import org.example.vertx.service.BookAsyncService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,9 @@ import static java.net.HttpURLConnection.HTTP_CREATED;
 @Slf4j
 public class BookRestApi extends AbstractVerticle {
 
+  @Autowired
+  AppConfig appConfig;
+
   private BookAsyncService bookAsyncService;
 
   @Override
@@ -59,7 +63,7 @@ public class BookRestApi extends AbstractVerticle {
     StaticHandler staticHandler = StaticHandler.create();
     router.route().handler(staticHandler);
 
-    vertx.createHttpServer().requestHandler(router).listen(8080, listen -> {
+    vertx.createHttpServer().requestHandler(router).listen(appConfig.getHttpPort(), listen -> {
       if (listen.succeeded()) {
         log.info("BookRestApi started");
         startFuture.complete();
@@ -85,7 +89,9 @@ public class BookRestApi extends AbstractVerticle {
       if (ar.succeeded()) {
         List<Book> result = ar.result();
         JsonArray jsonArray = new JsonArray(result);
-        routingContext.response().end(jsonArray.encodePrettily());
+        routingContext.response()
+                .putHeader("Content-type", "text/html;charset=utf-8")
+                .end(jsonArray.encodePrettily());
       } else {
         routingContext.fail(ar.cause());
       }

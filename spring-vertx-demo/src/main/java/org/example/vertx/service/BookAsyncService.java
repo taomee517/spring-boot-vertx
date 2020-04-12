@@ -41,13 +41,6 @@ public interface BookAsyncService {
    */
   String ADDRESS = BookAsyncService.class.getName();
 
-//  static BookAsyncService createProxy(Vertx vertx,
-//                                      String address) {
-//    return new BookAsyncServiceVertxEBProxy(vertx, address);
-//  }
-
-
-
   void add(Book book, Handler<AsyncResult<Book>> resultHandler);
 
   void getAll(Handler<AsyncResult<List<Book>>> resultHandler);

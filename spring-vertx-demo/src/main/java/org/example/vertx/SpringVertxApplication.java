@@ -5,8 +5,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.example.vertx.verticle.BookRestApi;
-import org.example.vertx.verticle.BookVerticle;
-import org.example.vertx.verticle.IndexServer;
 import org.example.vertx.verticle.SpringWorker;
 import org.example.vertx.verticle.factory.SpringVerticleFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -32,11 +29,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Slf4j
 @SpringBootApplication
 public class SpringVertxApplication {
-    @Autowired
-    IndexServer indexServer;
-
-    @Autowired
-    BookVerticle bookVerticle;
+//    @Autowired
+//    IndexServer indexServer;
+//
+//    @Autowired
+//    BookVerticle bookVerticle;
 
     @Autowired
     SpringVerticleFactory verticleFactory;
@@ -55,6 +52,7 @@ public class SpringVertxApplication {
 //    @PostConstruct
 //    public void loadVerticle(){
 //        Vertx.vertx().deployVerticle(indexServer);
+//        Vertx.vertx().deployVerticle(bookVerticle);
 //    }
 
     @EventListener
@@ -65,12 +63,12 @@ public class SpringVertxApplication {
         Vertx vertx = Vertx.vertx(options);
         vertx.registerVerticleFactory(verticleFactory);
 
-        vertx.deployVerticle(bookVerticle);
+
 
         CountDownLatch deployLatch = new CountDownLatch(2);
         AtomicBoolean failed = new AtomicBoolean(false);
 
-        String restApiVerticleName = verticleFactory.prefix() + BookRestApi.class.getName();
+        String restApiVerticleName = verticleFactory.prefix() + ":" + BookRestApi.class.getName();
         vertx.deployVerticle(restApiVerticleName, ar -> {
             if (ar.failed()) {
                 log.error("Failed to deploy verticle", ar.cause());
@@ -84,7 +82,7 @@ public class SpringVertxApplication {
                 // As worker verticles are never executed concurrently by Vert.x by more than one thread,
                 // deploy multiple instances to avoid serializing requests.
                 .setInstances(springWorkerInstances);
-        String workerVerticleName = verticleFactory.prefix() + SpringWorker.class.getName();
+        String workerVerticleName = verticleFactory.prefix() + ":" + SpringWorker.class.getName();
         vertx.deployVerticle(workerVerticleName, workerDeploymentOptions, ar -> {
             if (ar.failed()) {
                 log.error("Failed to deploy verticle", ar.cause());

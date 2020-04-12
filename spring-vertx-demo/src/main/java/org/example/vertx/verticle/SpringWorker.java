@@ -18,7 +18,6 @@ package org.example.vertx.verticle;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.serviceproxy.ProxyHelper;
 import io.vertx.serviceproxy.ServiceBinder;
 import lombok.extern.slf4j.Slf4j;
 import org.example.vertx.service.BookAsyncService;

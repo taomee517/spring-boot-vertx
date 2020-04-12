@@ -42,7 +42,10 @@ public class Book {
     // Mandatory for data objects
     public Book(JsonObject jsonObject) {
 //        BookConverter.fromJson(jsonObject, this);
-        Json.decodeValue(jsonObject.toString(),Book.class);
+        Book book = Json.decodeValue(jsonObject.toString(),Book.class);
+        this.id = book.id;
+        this.author = book.author;
+        this.name = book.name;
     }
 
     public Long getId() {

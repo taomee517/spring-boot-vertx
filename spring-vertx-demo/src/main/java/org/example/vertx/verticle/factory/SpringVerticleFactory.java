@@ -20,7 +20,7 @@ public class SpringVerticleFactory implements ApplicationContextAware, VerticleF
 
     @Override
     public String prefix() {
-        return "vertx-verticle:";
+        return "vertx-verticle";
     }
 
     @Override

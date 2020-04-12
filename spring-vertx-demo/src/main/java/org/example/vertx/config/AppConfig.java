@@ -1,8 +1,8 @@
 package org.example.vertx.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 /**
  * AppConfig
@@ -11,7 +11,7 @@ import org.springframework.core.env.Environment;
  * @Date: 2020/4/11 0011 15:45
  * @Description:
  */
-@Configuration
+@Component
 public class AppConfig {
 
     @Autowired

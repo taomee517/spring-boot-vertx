@@ -23,7 +23,7 @@ import org.example.vertx.dao.Book;
 import org.example.vertx.service.BookAsyncService;
 import org.example.vertx.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author Thomas Segismont
  */
-@Component
+@Service
 public class BookAsyncServiceImpl implements BookAsyncService {
 
   @Autowired
