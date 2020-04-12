@@ -4,7 +4,6 @@ allprojects {
         lombokVersion = '1.18.10'
         junitVersion = '4.12'
         vertxVersion = '3.9.0'
-        h2Version = '1.4.199'
     }
 
     //统一引入java插件，子项目可以不用重复配置
