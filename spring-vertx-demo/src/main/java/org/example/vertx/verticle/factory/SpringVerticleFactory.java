@@ -6,6 +6,11 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * SpringVerticleFactory
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringVerticleFactory implements ApplicationContextAware, VerticleFactory {
     private ApplicationContext applicationContext;
+    private Map<String, Verticle> verticleMap = new ConcurrentHashMap<>();
 
     @Override
     public String prefix() {
@@ -40,5 +46,20 @@ public class SpringVerticleFactory implements ApplicationContextAware, VerticleF
     @Override
     public boolean blockingCreate() {
         return true;
+    }
+
+    public Map<String, Verticle> loadAllVerticle(){
+        Map<String, Verticle> ctxVerticles = this.applicationContext.getBeansOfType(Verticle.class);
+        if(!CollectionUtils.isEmpty(ctxVerticles)){
+            ctxVerticles.values().forEach(verticle -> {
+                String clzName = verticle.getClass().getName();
+                StringBuilder verticleRegisterSb = new StringBuilder(prefix());
+                verticleRegisterSb.append(":");
+                verticleRegisterSb.append(clzName);
+                String verticleRegisterName = verticleRegisterSb.toString();
+                this.verticleMap.put(verticleRegisterName, verticle);
+            });
+        }
+        return this.verticleMap;
     }
 }

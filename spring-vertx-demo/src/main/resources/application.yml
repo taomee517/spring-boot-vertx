@@ -12,9 +12,12 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&nullNamePatternMatchesAll=true&serverTimezone=Asia/Shanghai&useSSL=false
+#    url: jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&nullNamePatternMatchesAll=true&serverTimezone=Asia/Shanghai&useSSL=false
+#    username: root
+#    password: 123456
+    url: jdbc:mysql://101.33.211.54:3306/demo?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&nullNamePatternMatchesAll=true&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
-    password: 123456
+    password: itech.com
     filters:  stat,wall,log4j
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
     initialSize:  2

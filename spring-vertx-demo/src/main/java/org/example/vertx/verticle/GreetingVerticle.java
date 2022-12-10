@@ -1,7 +1,7 @@
 package org.example.vertx.verticle;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import org.example.vertx.config.AppConfig;
 import org.example.vertx.methods.Greeter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,20 +27,20 @@ public class GreetingVerticle extends AbstractVerticle {
     AppConfig appConfig;
 
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
+    public void start(Promise<Void> startPromise) throws Exception {
         vertx.createHttpServer().requestHandler(request -> {
            String name = request.getParam("name");
-           String greetMsg = greeter.sayHello(name);
             if (name == null) {
                 request.response().setStatusCode(400).end("Missing name");
             } else {
+                String greetMsg = greeter.sayHello(name);
                 request.response().end(greetMsg);
             }
         }).listen(appConfig.getHttpPort(),result -> {
             if(result.succeeded()){
-                startFuture.complete();
+                startPromise.complete();
             }else {
-                startFuture.fail(result.cause());
+                startPromise.fail(result.cause());
             }
         });
     }

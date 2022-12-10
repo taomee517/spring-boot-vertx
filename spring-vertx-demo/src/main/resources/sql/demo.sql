@@ -29,4 +29,5 @@ CREATE TABLE `tb_book` (
 -- ----------------------------
 -- Records of tb_book
 -- ----------------------------
-INSERT INTO `tb_book` VALUES ('1', '围城', '钱钟书');
+INSERT INTO `tb_book` VALUES (1, '围城', '钱钟书');
+INSERT INTO `tb_book` VALUES (2, 'Thinking in Java', 'Bruce Eckel');

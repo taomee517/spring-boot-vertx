@@ -17,7 +17,7 @@
 package org.example.vertx.verticle;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.serviceproxy.ServiceBinder;
 import lombok.extern.slf4j.Slf4j;
 import org.example.vertx.service.BookAsyncService;
@@ -44,15 +44,17 @@ public class SpringWorker extends AbstractVerticle {
   BookAsyncService bookAsyncService;
 
   @Override
-  public void start(Future<Void> startFuture) throws Exception {
-    new ServiceBinder(vertx).setAddress(BookAsyncService.ADDRESS).register(BookAsyncService.class, bookAsyncService).completionHandler(ar ->{
-      if (ar.succeeded()) {
-        log.info("SpringWorker started");
-        startFuture.complete();
-      } else {
-        startFuture.fail(ar.cause());
-      }
-    });
+  public void start(Promise<Void> startPromise) throws Exception {
+    new ServiceBinder(vertx).setAddress(BookAsyncService.ADDRESS)
+            .register(BookAsyncService.class, bookAsyncService)
+            .completionHandler(ar ->{
+              if (ar.succeeded()) {
+                log.info("SpringWorker started, service register OK!");
+                startPromise.complete();
+              } else {
+                startPromise.fail(ar.cause());
+              }
+            });
   }
 
 }

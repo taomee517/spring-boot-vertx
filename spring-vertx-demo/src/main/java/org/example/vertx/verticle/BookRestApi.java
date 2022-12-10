@@ -17,7 +17,7 @@
 package org.example.vertx.verticle;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.json.JsonArray;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -50,27 +50,29 @@ public class BookRestApi extends AbstractVerticle {
   private BookAsyncService bookAsyncService;
 
   @Override
-  public void start(Future<Void> startFuture) throws Exception {
+  public void start(Promise<Void> startPromise) throws Exception {
     bookAsyncService = new ServiceProxyBuilder(vertx).setAddress(BookAsyncService.ADDRESS).build(BookAsyncService.class);
 
     Router router = Router.router(vertx);
 
     router.route().handler(BodyHandler.create());
 
-    router.post("/book").handler(this::addBook);
-    router.get("/books").handler(this::getAllBooks);
+    router.post("/book/save").handler(this::addBook);
+    router.get("/book/list").handler(this::getAllBooks);
 
     StaticHandler staticHandler = StaticHandler.create();
     router.route().handler(staticHandler);
 
-    vertx.createHttpServer().requestHandler(router).listen(appConfig.getHttpPort(), listen -> {
-      if (listen.succeeded()) {
-        log.info("BookRestApi started");
-        startFuture.complete();
-      } else {
-        startFuture.fail(listen.cause());
-      }
-    });
+    int port = appConfig.getHttpPort();
+    vertx.createHttpServer().requestHandler(router)
+            .listen(port, listen -> {
+              if (listen.succeeded()) {
+                log.info("BookRestApi started at port: {}", port);
+                startPromise.complete();
+              } else {
+                startPromise.fail(listen.cause());
+              }
+            });
   }
 
   private void addBook(RoutingContext routingContext) {

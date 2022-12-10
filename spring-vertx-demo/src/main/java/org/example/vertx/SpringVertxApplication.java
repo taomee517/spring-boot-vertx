@@ -1,10 +1,13 @@
 package org.example.vertx;
 
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.example.vertx.verticle.BookRestApi;
+import org.example.vertx.verticle.BookVerticle;
+import org.example.vertx.verticle.IndexServer;
 import org.example.vertx.verticle.SpringWorker;
 import org.example.vertx.verticle.factory.SpringVerticleFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +16,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -63,26 +69,45 @@ public class SpringVertxApplication {
         Vertx vertx = Vertx.vertx(options);
         vertx.registerVerticleFactory(verticleFactory);
 
-
-
         CountDownLatch deployLatch = new CountDownLatch(2);
         AtomicBoolean failed = new AtomicBoolean(false);
+        String verticleName = verticleFactory.prefix() + ":" + BookRestApi.class.getName();
+        String workerVerticleName = verticleFactory.prefix() + ":" + SpringWorker.class.getName();
 
-        String restApiVerticleName = verticleFactory.prefix() + ":" + BookRestApi.class.getName();
-        vertx.deployVerticle(restApiVerticleName, ar -> {
-            if (ar.failed()) {
-                log.error("Failed to deploy verticle", ar.cause());
+        vertx.deployVerticle(verticleName, ar -> {
+            if (ar.succeeded()) {
+                log.info("Verticle deploy success: {}", verticleName);
+            }else {
+                log.error("Verticle deploy fail, name: {}， cause: {}", verticleName, ar.cause());
                 failed.compareAndSet(false, true);
             }
             deployLatch.countDown();
         });
+
+//        Map<String, Verticle> verticleMap = verticleFactory.loadAllVerticle();
+//        CountDownLatch deployLatch = new CountDownLatch(verticleMap.size());
+//        AtomicBoolean failed = new AtomicBoolean(false);
+//        String workerVerticleName = verticleFactory.prefix() + ":" + SpringWorker.class.getName();
+
+//        if(!CollectionUtils.isEmpty(verticleMap)){
+//            verticleMap.keySet().stream().filter(key-> !key.equals(workerVerticleName))
+//                    .forEach(verticleName -> vertx.deployVerticle(verticleName, ar -> {
+//                        if (ar.succeeded()) {
+//                            log.info("Verticle deploy success: {}", verticleName);
+//                        }else {
+//                            log.error("Verticle deploy fail, name: {}， cause: {}", verticleName, ar.cause());
+//                            failed.compareAndSet(false, true);
+//                        }
+//                        deployLatch.countDown();
+//                    }));
+//        }
+
 
         DeploymentOptions workerDeploymentOptions = new DeploymentOptions()
                 .setWorker(true)
                 // As worker verticles are never executed concurrently by Vert.x by more than one thread,
                 // deploy multiple instances to avoid serializing requests.
                 .setInstances(springWorkerInstances);
-        String workerVerticleName = verticleFactory.prefix() + ":" + SpringWorker.class.getName();
         vertx.deployVerticle(workerVerticleName, workerDeploymentOptions, ar -> {
             if (ar.failed()) {
                 log.error("Failed to deploy verticle", ar.cause());

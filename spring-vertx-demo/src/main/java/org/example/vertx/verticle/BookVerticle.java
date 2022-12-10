@@ -1,8 +1,8 @@
 package org.example.vertx.verticle;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.Json;
@@ -18,14 +18,14 @@ import org.springframework.stereotype.Component;
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE;
 
 /**
- * GreetingVerticle
+ * BookVerticle
  *
  * @Author: taomee
  * @Date: 2020/4/11 0011 16:36
  * @Description:
  */
 @Component
-@Scope(SCOPE_PROTOTYPE)
+//@Scope(SCOPE_PROTOTYPE)
 public class BookVerticle extends AbstractVerticle {
     @Autowired
     BookService bookService;
@@ -34,13 +34,13 @@ public class BookVerticle extends AbstractVerticle {
     AppConfig appConfig;
 
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
+    public void start(Promise<Void> startPromise) throws Exception {
         Router router = Router.router(vertx);
         router.route("/getbook").handler(new Handler<RoutingContext>() {
             @Override
             public void handle(RoutingContext context) {
                 HttpServerRequest request = context.request();
-                long id = Long.valueOf(request.getParam("id"));
+                long id = Long.parseLong(request.getParam("id"));
                 Book book = bookService.getBook(id);
                 if (book == null) {
                     request.response().setStatusCode(400).end("no book");
@@ -52,12 +52,13 @@ public class BookVerticle extends AbstractVerticle {
                 }
             }
         });
-        vertx.createHttpServer().requestHandler(router).listen(appConfig.getHttpPort(),result -> {
-            if(result.succeeded()){
-                startFuture.complete();
-            }else {
-                startFuture.fail(result.cause());
-            }
-        });
+        vertx.createHttpServer().requestHandler(router)
+                .listen(appConfig.getHttpPort(),result -> {
+                    if(result.succeeded()){
+                        startPromise.complete();
+                    }else {
+                        startPromise.fail(result.cause());
+                    }
+                });
     }
 }
